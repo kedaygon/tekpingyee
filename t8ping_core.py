@@ -1,7 +1,6 @@
 import re
 import sys
 import time
-import hashlib
 import ipaddress
 import subprocess
 import statistics as st
@@ -136,10 +135,6 @@ def last_hop_slow(ip, hops=18, wait=400):
         if vals:
             best = st.median(vals)
     return best
-
-
-def peer_tag(ip):
-    return "#" + hashlib.sha256(ip.encode()).hexdigest()[:4].upper()
 
 
 def frames_of(rtt):
@@ -430,7 +425,7 @@ class Engine(threading.Thread):
         self.phase = "idle"
         self.hot = 0
         self.lock = threading.Lock()
-        self.state = {"phase": "idle", "game": "init", "tag": None,
+        self.state = {"phase": "idle", "game": "init",
                       "connected": False,
                       "rtt": None, "sta": None, "lag": None, "stb": None,
                       "all": None, "held": 0.0, "rate": 0.0}
@@ -546,12 +541,11 @@ class Engine(threading.Thread):
                 sta = stability_accept(acc)
             lag, stb, allv = verdict(rtt, sta)
             held = (last - first) / 1000.0
-            s = {"phase": self.phase, "game": gmode,
-                 "tag": peer_tag(key[0]), "connected": True,
+            s = {"phase": self.phase, "game": gmode, "connected": True,
                  "rtt": rtt, "sta": sta, "lag": lag, "stb": stb,
                  "all": allv, "held": held, "rate": rate}
         else:
-            s = {"phase": "idle", "game": gmode, "tag": None,
+            s = {"phase": "idle", "game": gmode,
                  "connected": False,
                  "rtt": None, "sta": None, "lag": None, "stb": None,
                  "all": None, "held": 0.0, "rate": 0.0}

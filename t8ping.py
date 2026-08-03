@@ -338,10 +338,9 @@ class Overlay(QWidget):
             y += 22
         p.setFont(QFont("Malgun Gothic", 8))
         p.setPen(FAINT)
-        tag = self.s.get("tag")
         game = self.s.get("game")
-        if tag:
-            who = f"상대 {tag}"
+        if self.s.get("connected"):
+            who = "매칭됨"
             if game == "no_perm":
                 who += " (포트 미확인)"
         elif game == "no_game":
